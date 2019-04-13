@@ -1,0 +1,13 @@
+{{>header}}
+
+    
+    {{#if_eq tipo "docente"}}
+        <h2 class="text-center tituloUsuarios">Lista de cursos asignados</h2>
+        {{{cursosAsignados cursos inscritos usuarios}}}
+        {{else}}
+        <h2 class="text-center tituloUsuarios">Acceso denegado</h2>
+        {{/if_eq}}
+
+
+
+{{>footer}}
