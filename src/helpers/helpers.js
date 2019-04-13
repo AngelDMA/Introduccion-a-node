@@ -237,3 +237,79 @@ hbs.registerHelper('listarCursosInscritos', (listado) => {
 	texto = texto + `</tbody> </table> </form> </div>`;
 	return texto;
 })
+hbs.registerHelper('cursosAsignados', (cursos, inscritos, usuarios)=>{
+
+    let texto = '<div class="container"> <div class="accordion" id="accordionExample">';
+    i = 1;
+    cursos.forEach(curso => {
+        texto = texto +
+               `<div class="card">
+                    <div class="card-header" id="heading${i}">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
+                            ${curso.nombre}
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="collapse${i}" class="collapse" aria-labelledby="heading${i}" data-parent="#accordionExample">
+                        <div class="card-body">
+                           
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                    Nombre
+                                        ${curso.nombre}
+                                    </li>
+                                    <li class="list-group-item">
+                                    Descripcion
+                                       ${curso.descripcion}
+                                    </li>
+                                    <li class="list-group-item">
+                                    Valor
+                                       ${curso.valor}
+                                    </li>
+                                    <li class="list-group-item">
+                                    Modalidad
+                                        ${curso.modalidad}
+                                    </li>
+                                    <li class="list-group-item">
+                                    Intensidad
+                                        ${curso.intensidad}
+                                    </li>
+                                    
+                                </ul>
+
+                                <h5 class="text-center tituloUsuarios">Estudiantes Inscritos en el curso</h5>
+
+                                <table class='table table-striped table-hover'>
+                                    <thead class='thead-dark'>
+                                    <th>Nombre</th>
+                                    <th>Documento</th>
+                                    <th>Correo</th>
+                                    <th>Teléfono</th>
+                                    </thead>
+                                    <tbody>`;
+
+                                    var filtro = inscritos.filter(inscrito => inscrito.idCurso == curso.id);
+                                    filtro.forEach(inscrito => {
+                                    let estudiante = usuarios.find(usuario => usuario.documento == inscrito.documento)
+                                    let valor = estudiante.documento + ',' + String(curso.id);
+                                    texto = texto +
+                                    `<tr>
+                                    <td> ${estudiante.nombre} </td>
+                                    <td> ${estudiante.documento} </td>
+                                    <td> ${estudiante.correo}</td>
+                                    <td> ${estudiante.telefono}</td>
+                                    </tr>`    
+                                })
+                                texto = texto + `</tbody> </table></form>
+                        </div>
+                    </div>
+                </div>`;
+                i=i+1;
+    });
+
+    texto = texto + '</div> </div>';
+
+    return texto;
+})

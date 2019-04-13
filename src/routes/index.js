@@ -303,12 +303,42 @@ app.post('/actualizado', (req,res) =>{
 	})
 })
 
+app.get('/cursos-docente', (req,res) => {
+
+	Curso.find({documentoDocente: req.session.usuario}, (err,resultado) =>{
+		if(err){
+			return console.log(err)
+		}
+		
+		Inscrito.find({}, (err2, resultado2) => {
+			if (err2) {
+				return console.log(err2)
+			}
+			Usuario.find({}, (err3, resultado3) => {
+				if (err3) {
+					return console.log(err3)
+				}
+				res.render('cursos-docente', {
+					titulo: 'Cursos docente',
+					cursos: resultado,
+					inscritos: resultado2,
+					usuarios: resultado3
+				})
+			})
+		})
+	})
+
+
+})
+
 app.get('/salida', (req, res) => {
 	req.session.destroy((err) => {
   		if (err) return console.log(err)
 	})
 	res.redirect('/')
 })
+
+
 
 app.get('*',(req,res)=> {
 	res.render('error', {
