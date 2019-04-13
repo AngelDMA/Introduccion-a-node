@@ -1,0 +1,43 @@
+{{>header}}
+<div class="container">
+    <h2 class="text-center">Formulario de creación de curso</h2>
+
+    <form action="/crearCurso" method="post">
+        <div class="row">
+            <div class="col">
+                <input type="text" class="form-control" placeholder="Nombre completo" name="nombre" required>
+            </div>
+            <div class="col">
+              <input type="number" class="form-control" placeholder="id del curso" name="id" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+              <input type="text" class="form-control" placeholder="Descripción" name="descripcion" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <input type="number" name="valor" class="form-control" placeholder="Valor" required>
+            </div>
+            <div class="col">
+                <input type="number" class="form-control" placeholder="Intensidad horaria" name="intensidad">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <select name="modalidad_curso" id="" class="form-control">
+                    <option value="elegir" selected>Elige una opción</option>
+                    <option value="presencial">Presencial</option>
+                    <option value="virtual">Virtual</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-primary">Crear curso</button>
+        </div>
+
+    </form>
+</div>
+{{>footer}}

@@ -1,0 +1,10 @@
+{{>header}}
+  <div class="container">
+    {{#if_eq tipo 'coordinador'}}
+      <h2 class="text-center tituloUsuarios">Lista de cursos y usuarios registrados</h2>
+      {{{listarCursos cursos inscritos usuarios}}}
+    {{else}}
+        <h2 class="text-center tituloUsuarios">Acceso denegado</h2>
+    {{/if_eq}}
+  </div>
+{{>footer}}

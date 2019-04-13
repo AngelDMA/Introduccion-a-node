@@ -1,0 +1,8 @@
+{{>header}}
+{{#if_eq tipo 'coordinador'}}
+    <h2 class="text-center tituloUsuarios">Lista de usuarios registrados</h2>
+    {{{listarUsuarios listado}}}
+{{else}}
+    <h2 class="text-center tituloUsuarios">Acceso denegado</h2>
+{{/if_eq}}
+{{>footer}}

@@ -1,0 +1,14 @@
+{{>header}}
+
+
+<div class="container">
+    {{#if_eq tipo 'coordinador'}}
+        {{mensajeCoordinador}}
+    {{else}}
+        {{{listar listado}}}
+        <br>
+        {{{listar2 listado}}}
+    {{/if_eq}}
+</div>
+
+{{>footer}}
