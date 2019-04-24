@@ -198,6 +198,7 @@ app.post('/ingresar', (req, res) => {
 		req.session.nombre = resultados.nombre
 		req.session.tipo = resultados.tipo
 		avatar = resultados.avatar.toString('base64')
+		req.session.avatar = avatar
 
 		res.render('ingresar', {
 			mensaje: "Bienvenido " + resultados.nombre,
