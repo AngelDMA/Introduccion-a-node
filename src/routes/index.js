@@ -60,21 +60,53 @@ app.get('/crearCurso', (req, res) => {
 	})
 })
 
-app.post('/crearCurso', (req, res) => {
+app.post('/cambiar-nota', (req,res) => {
+	Inscrito.findOneAndUpdate({$and: [{documento : req.body.documento}, {idCurso: req.body.idCurso}]}, {notaFinal: req.body.nota}, {new: true}, (err, resultado)=>{
+		if(err){
+			return console.log(err)
+		}
 
-	let modalidadR
-	if (req.body.modalidad_curso == 'elegir') {
-		modalidadR = 'No especificado'
-	}
-	else modalidadR = req.body.modalidad_curso;
+		if(!resultado){
+			res.render('actualizado',{
+				titulo: 'Error',
+				mensaje: 'No existe usuario con el documento ingresado',
+				nombre: '.'
+			})
+		}
+		else {
+			Inscrito.find({idCurso: req.body.idCurso}, (err, resultado) => {
+				if (err) {
+					return console.log(err)
+				}
+				Usuario.find({}, (err, resultado2) => {
+					if (err) {
+						return console.log(err)
+					}
+					res.render('curso-seleccionado',{
+						inscritos: resultado,
+						usuarios: resultado2
+					})
+				})
+			})
+		}
+	})
+})
 
-	let curso = new Curso({
-		nombre: req.body.nombre,
-		id: req.body.id,
-		descripcion: req.body.descripcion,
-		valor: req.body.valor,
-		intensidad: req.body.intensidad,
-		modalidad: modalidadR
+app.post('/crearCurso', (req, res ) => {
+
+ let modalidadR
+ if (req.body.modalidad_curso == 'elegir'){
+	 modalidadR = 'No especificado'
+ }
+ else modalidadR = req.body.modalidad_curso;
+
+	let curso = new Curso ({
+		nombre : req.body.nombre,
+		id : req.body.id,
+		descripcion : req.body.descripcion,
+		valor : req.body.valor,
+		intensidad : req.body.intensidad,
+		modalidad : modalidadR
 	})
 
 	curso.save((err, resultado) => {
@@ -174,6 +206,24 @@ app.post('/registro', upload.single('imagen-perfil'), (req, res) => {
 		}
 		res.render('indexpost', {
 			mostrar: "Se ha registrado exitosamente"
+		})
+	})
+});
+
+app.post('/curso-seleccionado', (req, res ) => {
+	Inscrito.find({idCurso: req.body.id}, (err, resultado) => {
+		if (err) {
+			return console.log(err)
+		}
+		Usuario.find({}, (err, resultado2) => {
+			if (err) {
+				return console.log(err)
+			}
+			res.render('curso-seleccionado',{
+				titulo: req.body.nombre,
+				inscritos: resultado,
+				usuarios: resultado2
+			})
 		})
 	})
 });

@@ -15,7 +15,11 @@ const inscritoEsquema = new Schema({
   documento : {
     type: String,
     required : true
-  }
+  },
+	notaFinal : {
+		type: Number,
+		default: 0
+	}
 });
 
 inscritoEsquema.index({idCurso: 1, documento: 1}, {unique: true});

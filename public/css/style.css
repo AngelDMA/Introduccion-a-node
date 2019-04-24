@@ -14,6 +14,9 @@
     margin-bottom: 20px;
 }
 
+.mar {
+  margin-right: 20px; 
+}
 .contenedor-salir{
     display: flex;
     flex-direction: row;
@@ -27,3 +30,4 @@
     border: 1px solid aquamarine;
     margin-right:10px;
 }
+
