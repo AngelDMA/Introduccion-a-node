@@ -29,7 +29,10 @@ const usuarioEsquema = new Schema({
     type : String,
     required : true,
     enum : {values: ['aspirante', 'coordinador', 'docente']}
-  }
+	},
+	avatar : {
+		type: Buffer
+	}
 });
 
 usuarioEsquema.plugin(uniqueValidator);
