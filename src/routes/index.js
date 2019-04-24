@@ -1,29 +1,57 @@
 const express = require('express')
-const app = express ()
+const app = express()
 const path = require('path')
-const hbs = require ('hbs')
+const hbs = require('hbs')
 const Usuario = require('./../models/usuario')
 const Curso = require('./../models/curso')
 const Inscrito = require('./../models/inscrito')
 const dirViews = path.join(__dirname, '../../template/views')
 const dirPartials = path.join(__dirname, '../../template/partials')
 const bcrypt = require('bcrypt');
+const multer = require('multer')
 require('./../helpers/helpers')
 
 app.set('view engine', 'hbs')
 app.set('views', dirViews)
 hbs.registerPartials(dirPartials)
 
-app.get('/', (req, res ) => {
+/* var storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, 'public/uploads')
+	},
+	filename: function (req, file, cb) {
+		cb(null, 'avatar' + req.body.documento + path.extname(file.originalname))
+	}
+}) */
+
+var upload = multer({
+	limits: {
+		fileSize: 10000000
+	},
+	fileFilter(req, file, cb) {
+
+		// You can always pass an error if something goes wrong:
+		if(!file.originalname.match(/\.(jpg|png|jpeg)$/)){		
+			return cb(new Error('Formato no válido'))
+		}
+
+		// To accept the file pass `true`, like so:
+		cb(null, true)
+
+
+	}
+})
+
+app.get('/', (req, res) => {
 	res.render('index', {
 		titulo: 'Inicio',
 	})
 });
 
 app.get('/registro', (req, res) => {
-    res.render('registro',{
-        titulo: 'Registro'
-    })
+	res.render('registro', {
+		titulo: 'Registro'
+	})
 })
 
 app.get('/crearCurso', (req, res) => {
@@ -32,44 +60,44 @@ app.get('/crearCurso', (req, res) => {
 	})
 })
 
-app.post('/crearCurso', (req, res ) => {
+app.post('/crearCurso', (req, res) => {
 
- let modalidadR
- if (req.body.modalidad_curso == 'elegir'){
-	 modalidadR = 'No especificado'
- }
- else modalidadR = req.body.modalidad_curso;
+	let modalidadR
+	if (req.body.modalidad_curso == 'elegir') {
+		modalidadR = 'No especificado'
+	}
+	else modalidadR = req.body.modalidad_curso;
 
-	let curso = new Curso ({
-		nombre : req.body.nombre,
-		id : req.body.id,
-		descripcion : req.body.descripcion,
-		valor : req.body.valor,
-		intensidad : req.body.intensidad,
-		modalidad : modalidadR
+	let curso = new Curso({
+		nombre: req.body.nombre,
+		id: req.body.id,
+		descripcion: req.body.descripcion,
+		valor: req.body.valor,
+		intensidad: req.body.intensidad,
+		modalidad: modalidadR
 	})
 
 	curso.save((err, resultado) => {
-		if (err){
-			return res.render ('indexpost', {
-				mostrar : err
+		if (err) {
+			return res.render('indexpost', {
+				mostrar: err
 			})
 		}
-		res.render ('indexpost', {
-				mostrar : "Se ha creado exitosamente"
-			})
+		res.render('indexpost', {
+			mostrar: "Se ha creado exitosamente"
+		})
 	})
 });
 
-app.get('/cursos', (req,res) => {
-	if(req.session.tipo != 'coordinador'){
-		Curso.find({estado: 'disponibles'},(err,respuesta)=>{
-			if (err){
+app.get('/cursos', (req, res) => {
+	if (req.session.tipo != 'coordinador') {
+		Curso.find({ estado: 'disponibles' }, (err, respuesta) => {
+			if (err) {
 				return console.log(err)
 			}
-			res.render ('cursos',{
+			res.render('cursos', {
 				titulo: 'Cursos disponibles',
-				listado : respuesta
+				listado: respuesta
 			})
 		})
 	}
@@ -77,118 +105,121 @@ app.get('/cursos', (req,res) => {
 
 app.get('/inscribir', (req, res) => {
 	let doc = req.session.usuario;
-	Curso.find({estado: 'disponibles'},(err,respuesta)=>{
-		if (err){
+	Curso.find({ estado: 'disponibles' }, (err, respuesta) => {
+		if (err) {
 			return console.log(err)
 		}
-		res.render ('inscribir',{
+		res.render('inscribir', {
 			titulo: 'Inscripción',
-			listado : respuesta,
-			documento : doc
+			listado: respuesta,
+			documento: doc
 		})
 	})
 })
 
-app.post('/inscribir', (req, res ) => {
+app.post('/inscribir', (req, res) => {
 	let curso1;
-	if (req.body.curso == ""){
-		return res.redirect ('/inscribir')
+	if (req.body.curso == "") {
+		return res.redirect('/inscribir')
 	}
 	else {
-		Curso.findOne({id: Number(req.body.curso)}, (err, resultados) => {
-			if (err){
+		Curso.findOne({ id: Number(req.body.curso) }, (err, resultados) => {
+			if (err) {
 				return console.log(err)
 			}
 			curso1 = resultados.nombre;
-			let inscrito = new Inscrito ({
-				idCurso : req.body.curso,
-				nombreCurso : curso1,
-				documento : req.session.usuario
+			let inscrito = new Inscrito({
+				idCurso: req.body.curso,
+				nombreCurso: curso1,
+				documento: req.session.usuario
 			});
 			inscrito.save((err, resultado) => {
-				if (err){
-					if (err.name == 'ValidationError'){
-						return res.render ('indexpost', {
-							mostrar : "Ya tienes inscrtio este curso"
+				if (err) {
+					if (err.name == 'ValidationError') {
+						return res.render('indexpost', {
+							mostrar: "Ya tienes inscrtio este curso"
 						})
 					}
 					else {
-						return res.render ('indexpost', {
-							mostrar : err
+						return res.render('indexpost', {
+							mostrar: err
 						})
 					}
 				}
-				res.render ('indexpost', {
-						mostrar : "Te has registrado exitosamente"
-					})
+				res.render('indexpost', {
+					mostrar: "Te has registrado exitosamente"
+				})
 			})
 		});
 	}
 });
 
-app.post('/registro', (req, res ) => {
+app.post('/registro', upload.single('imagen-perfil'), (req, res) => {
 
-	let usuario = new Usuario ({
-		nombre : req.body.nombre,
-		correo : req.body.correo,
-		telefono : req.body.telefono,
-		documento : req.body.documento,
-		password : bcrypt.hashSync(req.body.password, 10),
-		tipo : 'aspirante'
+	let usuario = new Usuario({
+		nombre: req.body.nombre,
+		correo: req.body.correo,
+		telefono: req.body.telefono,
+		documento: req.body.documento,
+		password: bcrypt.hashSync(req.body.password, 10),
+		tipo: 'aspirante',
+		avatar: req.file.buffer
 	})
 
 	usuario.save((err, resultado) => {
-		if (err){
-			return res.render ('indexpost', {
-				mostrar : err
+		if (err) {
+			return res.render('indexpost', {
+				mostrar: err
 			})
 		}
-		res.render ('indexpost', {
-				mostrar : "Se ha registrado exitosamente"
-			})
+		res.render('indexpost', {
+			mostrar: "Se ha registrado exitosamente"
+		})
 	})
 });
 
 app.post('/ingresar', (req, res) => {
-	Usuario.findOne({documento : req.body.documento}, (err, resultados) => {
-		if (err){
+	Usuario.findOne({ documento: req.body.documento }, (err, resultados) => {
+		if (err) {
 			return console.log(err)
 		}
-		if(!resultados){
-			return res.render ('ingresar', {
-			mensaje : "Usuario no encontrado"
+		if (!resultados) {
+			return res.render('ingresar', {
+				mensaje: "Usuario no encontrado"
 			})
 		}
-		if(!bcrypt.compareSync(req.body.password, resultados.password)){
-			return res.render ('ingresar', {
-			mensaje : "Contraseña no es correcta"
+		if (!bcrypt.compareSync(req.body.password, resultados.password)) {
+			return res.render('ingresar', {
+				mensaje: "Contraseña no es correcta"
 			})
 		}
-			//Para crear las variables de sesión
-			req.session.usuario = resultados.documento
-			req.session.nombre = resultados.nombre
-            req.session.tipo = resultados.tipo
+		//Para crear las variables de sesión
+		req.session.usuario = resultados.documento
+		req.session.nombre = resultados.nombre
+		req.session.tipo = resultados.tipo
+		avatar = resultados.avatar.toString('base64')
 
-			res.render('ingresar', {
-						mensaje : "Bienvenido " + resultados.nombre,
-						nombre : resultados.nombre,
-						sesion : true,
-                        tipo : resultados.tipo
-						})
+		res.render('ingresar', {
+			mensaje: "Bienvenido " + resultados.nombre,
+			nombre: resultados.nombre,
+			sesion: true,
+			tipo: resultados.tipo,
+			avatar: avatar
+		})
 	})
 })
 
 app.get('/miscursos', (req, res) => {
-	Inscrito.find({documento : req.session.usuario}, (err, resultado) => {
-		if(err){
+	Inscrito.find({ documento: req.session.usuario }, (err, resultado) => {
+		if (err) {
 			return console.log(err)
 		}
 
-		if(!resultado){
+		if (!resultado) {
 			return console.log('No tiene cursos inscritos')
 		}
 
-		res.render('miscursos',{
+		res.render('miscursos', {
 			titulo: 'Mis cursos',
 			listado: resultado
 		})
@@ -196,21 +227,21 @@ app.get('/miscursos', (req, res) => {
 })
 
 app.post('/miscursos', (req, res) => {
-	Inscrito.findOneAndDelete({$and: [{documento : req.session.usuario}, {idCurso: req.body.idCurso}]}, req.body, (err, resultado) =>{
-		if(err){
+	Inscrito.findOneAndDelete({ $and: [{ documento: req.session.usuario }, { idCurso: req.body.idCurso }] }, req.body, (err, resultado) => {
+		if (err) {
 			return console.log(err)
 		}
 
-		Inscrito.find({documento : req.session.usuario}, (err, resultado) => {
-			if(err){
+		Inscrito.find({ documento: req.session.usuario }, (err, resultado) => {
+			if (err) {
 				return console.log(err)
 			}
 
-			if(!resultado){
+			if (!resultado) {
 				return console.log('No tiene cursos inscritos')
 			}
 
-			res.render('miscursos',{
+			res.render('miscursos', {
 				titulo: 'Mis cursos',
 				listado: resultado
 			})
@@ -224,7 +255,7 @@ app.get('/listaUsuarios', (req, res) => {
 			return console.log(err)
 		}
 
-		res.render('listaUsuarios',{
+		res.render('listaUsuarios', {
 			titulo: 'Lista de usuarios',
 			listado: resultado
 		})
@@ -232,7 +263,7 @@ app.get('/listaUsuarios', (req, res) => {
 })
 
 app.get('/cursos-disponibles', (req, res) => {
-	Curso.find({estado: 'disponibles'}, (err, resultado) => {
+	Curso.find({ estado: 'disponibles' }, (err, resultado) => {
 		if (err) {
 			return console.log(err)
 		}
@@ -259,8 +290,8 @@ app.post('/cursos-disponibles', (req, res) => {
 	let vector = req.body.nombre.split(',');
 	let doc = vector[0];
 	let idC = Number(vector[1]);
-	Inscrito.findOneAndDelete({$and: [{documento : doc}, {idCurso: idC}]}, req.body, (err, resultado) =>{
-		if(err){
+	Inscrito.findOneAndDelete({ $and: [{ documento: doc }, { idCurso: idC }] }, req.body, (err, resultado) => {
+		if (err) {
 			return console.log(err)
 		}
 	})
@@ -272,30 +303,30 @@ app.post('/actualizarEstado', (req, res) => {
 	doc = valores[0];
 	nom = valores[1];
 	id1 = Number(valores[2]);
-	Curso.findOneAndUpdate({id: id1})
-	Curso.findOneAndUpdate({id: id1}, {$set: {documentoDocente: doc, nombreDocente:nom, estado: "cerrado"}}, {new: true}, (err, resultado)=>{
-		if(err){
+	Curso.findOneAndUpdate({ id: id1 })
+	Curso.findOneAndUpdate({ id: id1 }, { $set: { documentoDocente: doc, nombreDocente: nom, estado: "cerrado" } }, { new: true }, (err, resultado) => {
+		if (err) {
 			return console.log(err)
 		}
 		res.redirect("/cursos-disponibles")
 	})
 })
 
-app.post('/actualizado', (req,res) =>{
-	Usuario.findOneAndUpdate({documento: req.body.documento}, req.body, {new: true}, (err, resultado)=>{
-		if(err){
+app.post('/actualizado', (req, res) => {
+	Usuario.findOneAndUpdate({ documento: req.body.documento }, req.body, { new: true }, (err, resultado) => {
+		if (err) {
 			return console.log(err)
 		}
 
-		if(!resultado){
-			res.render('actualizado',{
+		if (!resultado) {
+			res.render('actualizado', {
 				titulo: 'Error',
 				mensaje: 'No existe usuario con el documento ingresado',
 				nombre: '.'
 			})
 		}
 
-		res.render('actualizado',{
+		res.render('actualizado', {
 			titulo: 'Usuario actualizado',
 			mensaje: 'Se ha actualizado el usuario ',
 			nombre: resultado.nombre
@@ -303,13 +334,13 @@ app.post('/actualizado', (req,res) =>{
 	})
 })
 
-app.get('/cursos-docente', (req,res) => {
+app.get('/cursos-docente', (req, res) => {
 
-	Curso.find({documentoDocente: req.session.usuario}, (err,resultado) =>{
-		if(err){
+	Curso.find({ documentoDocente: req.session.usuario }, (err, resultado) => {
+		if (err) {
 			return console.log(err)
 		}
-		
+
 		Inscrito.find({}, (err2, resultado2) => {
 			if (err2) {
 				return console.log(err2)
@@ -333,14 +364,14 @@ app.get('/cursos-docente', (req,res) => {
 
 app.get('/salida', (req, res) => {
 	req.session.destroy((err) => {
-  		if (err) return console.log(err)
+		if (err) return console.log(err)
 	})
 	res.redirect('/')
 })
 
 
 
-app.get('*',(req,res)=> {
+app.get('*', (req, res) => {
 	res.render('error', {
 		titulo: "Error 404"
 	})

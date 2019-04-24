@@ -2,7 +2,7 @@
 <div class="container">
     <h2 class="text-center">Formulario de registro</h2>
 
-    <form action="/registro" method="post">
+    <form action="/registro" method="post" enctype="multipart/form-data">
         <div class="row">
             <div class="col">
                 <input type="text" class="form-control" placeholder="Nombre" name="nombre" required>
@@ -10,10 +10,10 @@
         </div>
         <div class="row">
             <div class="col">
-              <input type="text" class="form-control" placeholder="Documento de identidad" name="documento" required>
+                <input type="text" class="form-control" placeholder="Documento de identidad" name="documento" required>
             </div>
             <div class="col">
-              <input type="text" class="form-control" placeholder="Contraseña" name="password" required>
+                <input type="text" class="form-control" placeholder="Contraseña" name="password" required>
             </div>
         </div>
 
@@ -23,6 +23,12 @@
             </div>
             <div class="col">
                 <input type="tel" class="form-control" placeholder="Teléfono" name="telefono" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label for="imagen-perfil">Foto de perfil</label>
+                <input type="file" class="form-control" name="imagen-perfil" id="imagen-perfil" placeholder="Foto de perfil" accept="image/*" required>
             </div>
         </div>
 
