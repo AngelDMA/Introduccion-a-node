@@ -218,6 +218,36 @@ hbs.registerHelper('listarCursos', (cursos, inscritos, usuarios) => {
   return texto;
 })
 
+hbs.registerHelper('cambiarNotaEstudiantes', (inscritos, usuarios) => {
+  let texto =
+  `<div class="container">
+  <h5 class="text-center tituloUsuarios">Estudiantes Inscritos en el curso</h5>
+  <form action="/cambiar-nota" method="post">
+  <table class='table table-striped table-hover'>
+      <thead class='thead-dark'>
+      <th>Nombre</th>
+      <th>Documento</th>
+      <th>Correo</th>
+      <th>Nota</th>
+      <th></th>
+      </thead>
+      <tbody>`;
+
+      inscritos.forEach(inscrito => {
+      let estudiante = usuarios.find(usuario => usuario.documento == inscrito.documento)
+      texto = texto +
+      `<tr>
+      <td> ${estudiante.nombre} </td>
+      <td> ${estudiante.documento} </td>
+      <td> ${estudiante.correo}</td>
+      <td><input name="nota" value="${inscrito.notaFinal}"><input name="documento" value="${inscrito.documento}" type="hidden"></td>
+      <td><button class="btn btn-danger" name="idCurso" value="${inscrito.idCurso}">actualizar</button></td>
+      </tr>`
+  })
+  texto = texto + `</tbody> </table></form></div>`
+  return texto;
+})
+
 hbs.registerHelper('listarCursosInscritos', (listado) => {
     let texto = `<div class="container">
                 <form action="/miscursos" method="post">
@@ -249,12 +279,19 @@ hbs.registerHelper('cursosAsignados', (cursos, inscritos, usuarios)=>{
                             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
                             ${curso.nombre}
                             </button>
+                            <form action="/curso-seleccionado" method="post">
+                            <input name="nombre" type="hidden" value="${curso.nombre}">
+                            <input name="id" type="hidden" value="${curso.id}">
+                            <button class="btn btn-primary" style="float:right" type="submit">
+                            Seleccionar
+                            </button>
+                            </form>
                         </h2>
                     </div>
 
                     <div id="collapse${i}" class="collapse" aria-labelledby="heading${i}" data-parent="#accordionExample">
                         <div class="card-body">
-                           
+
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item">
                                     Nombre
@@ -276,7 +313,7 @@ hbs.registerHelper('cursosAsignados', (cursos, inscritos, usuarios)=>{
                                     Intensidad
                                         ${curso.intensidad}
                                     </li>
-                                    
+
                                 </ul>
 
                                 <h5 class="text-center tituloUsuarios">Estudiantes Inscritos en el curso</h5>
@@ -300,7 +337,7 @@ hbs.registerHelper('cursosAsignados', (cursos, inscritos, usuarios)=>{
                                     <td> ${estudiante.documento} </td>
                                     <td> ${estudiante.correo}</td>
                                     <td> ${estudiante.telefono}</td>
-                                    </tr>`    
+                                    </tr>`
                                 })
                                 texto = texto + `</tbody> </table></form>
                         </div>

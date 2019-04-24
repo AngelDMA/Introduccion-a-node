@@ -32,6 +32,38 @@ app.get('/crearCurso', (req, res) => {
 	})
 })
 
+app.post('/cambiar-nota', (req,res) => {
+	Inscrito.findOneAndUpdate({$and: [{documento : req.body.documento}, {idCurso: req.body.idCurso}]}, {notaFinal: req.body.nota}, {new: true}, (err, resultado)=>{
+		if(err){
+			return console.log(err)
+		}
+
+		if(!resultado){
+			res.render('actualizado',{
+				titulo: 'Error',
+				mensaje: 'No existe usuario con el documento ingresado',
+				nombre: '.'
+			})
+		}
+		else {
+			Inscrito.find({idCurso: req.body.idCurso}, (err, resultado) => {
+				if (err) {
+					return console.log(err)
+				}
+				Usuario.find({}, (err, resultado2) => {
+					if (err) {
+						return console.log(err)
+					}
+					res.render('curso-seleccionado',{
+						inscritos: resultado,
+						usuarios: resultado2
+					})
+				})
+			})
+		}
+	})
+})
+
 app.post('/crearCurso', (req, res ) => {
 
  let modalidadR
@@ -146,6 +178,24 @@ app.post('/registro', (req, res ) => {
 		res.render ('indexpost', {
 				mostrar : "Se ha registrado exitosamente"
 			})
+	})
+});
+
+app.post('/curso-seleccionado', (req, res ) => {
+	Inscrito.find({idCurso: req.body.id}, (err, resultado) => {
+		if (err) {
+			return console.log(err)
+		}
+		Usuario.find({}, (err, resultado2) => {
+			if (err) {
+				return console.log(err)
+			}
+			res.render('curso-seleccionado',{
+				titulo: req.body.nombre,
+				inscritos: resultado,
+				usuarios: resultado2
+			})
+		})
 	})
 });
 
@@ -309,7 +359,7 @@ app.get('/cursos-docente', (req,res) => {
 		if(err){
 			return console.log(err)
 		}
-		
+
 		Inscrito.find({}, (err2, resultado2) => {
 			if (err2) {
 				return console.log(err2)
