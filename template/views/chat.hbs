@@ -1,0 +1,14 @@
+{{>header}}
+<div class="container">
+    <h3 class="text-center titulo-chat">Bienvenido al chat</h3>
+    <form action="" id="chat" class="chat">
+        <label for="msj_chat">Mensaje</label>
+        <input type="text" name="msj_chat" id="msj_chat" class="form-control">
+        <input type="hidden" name="nombre" id="nombre_usuario" value="{{nombre}}">
+        <button type="submit" class="btn btn-primary text-center">Enviar</button>
+    </form>
+    <div class="contenedor_chat">
+        <span class="msj_enviado" id="msj_enviado"></span>
+    </div>
+</div>
+{{>footer}}

@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken');
 //### Para usar las variables de sesión
 const session = require('express-session')
 var MemoryStore = require('memorystore')(session)
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 const dirPublic = path.join(__dirname, "../public")
 const dirNode_modules = path.join(__dirname, '../node_modules')
@@ -54,6 +56,21 @@ mongoose.connect(process.env.URLDB, { useNewUrlParser: true }, (err, resultado) 
 	console.log("conectado")
 });
 
-app.listen(process.env.PORT, () => {
+io.on('connection', client => {
+	client.emit("mensaje", "Bienvenido")
+
+	client.on("texto", (text, callback) => {
+		console.log(text)
+		io.emit("texto", text)
+		callback()
+	})
+
+	client.on("chat", (text, callback) => {
+		io.emit("chat", text)
+		callback()
+	})
+});
+
+server.listen(process.env.PORT, () => {
 	console.log('servidor en el puerto ' + process.env.PORT)
 });

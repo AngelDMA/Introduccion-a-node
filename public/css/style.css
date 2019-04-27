@@ -31,3 +31,25 @@
     margin-right:10px;
 }
 
+.btn-notificacion{
+    margin-right: 10px;
+}
+
+.titulo-chat{
+    margin-top: 10px;
+}
+.chat{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.contenedor_chat{
+    margin-top: 10px;
+    border: 1px solid aquamarine;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.nombre-usuario{
+    font-weight: bold;
+}
