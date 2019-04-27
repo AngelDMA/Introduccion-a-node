@@ -222,7 +222,7 @@ hbs.registerHelper('cambiarNotaEstudiantes', (inscritos, usuarios) => {
   let texto =
   `<div class="container">
   <h5 class="text-center tituloUsuarios">Estudiantes Inscritos en el curso</h5>
-  <form action="/cambiar-nota" method="post">
+  <form action="/cambiar-nota" method="post" id="form-cambiar-nota">
   <table class='table table-striped table-hover'>
       <thead class='thead-dark'>
       <th>Nombre</th>
@@ -240,8 +240,8 @@ hbs.registerHelper('cambiarNotaEstudiantes', (inscritos, usuarios) => {
       <td> ${estudiante.nombre} </td>
       <td> ${estudiante.documento} </td>
       <td> ${estudiante.correo}</td>
-      <td><input name="nota" value="${inscrito.notaFinal}"><input name="documento" value="${inscrito.documento}" type="hidden"></td>
-      <td><button class="btn btn-danger" name="idCurso" value="${inscrito.idCurso}">actualizar</button></td>
+      <td><input name="nota" id="nota" value="${inscrito.notaFinal}"><input name="documento" id="documento" value="${inscrito.documento}" type="hidden"></td>
+      <td><button class="btn btn-danger" name="idCurso" id="idCurso" value="${inscrito.idCurso}">actualizar</button></td>
       </tr>`
   })
   texto = texto + `</tbody> </table></form></div>`

@@ -413,6 +413,10 @@ app.get('/cursos-docente', (req, res) => {
 
 })
 
+app.get('/chat', (req, res) => {
+	res.render('chat')
+})
+
 app.get('/salida', (req, res) => {
 	req.session.destroy((err) => {
 		if (err) return console.log(err)
