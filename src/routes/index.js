@@ -1,3 +1,4 @@
+require('./../config/config');
 const express = require('express')
 const app = express()
 const path = require('path')
@@ -9,7 +10,10 @@ const dirViews = path.join(__dirname, '../../template/views')
 const dirPartials = path.join(__dirname, '../../template/partials')
 const bcrypt = require('bcrypt');
 const multer = require('multer')
+const sgMail = require('@sendgrid/mail');
 require('./../helpers/helpers')
+
+sgMail.setApiKey(process.env.SENDGRIP_API_KEY);
 
 app.set('view engine', 'hbs')
 app.set('views', dirViews)
@@ -23,6 +27,7 @@ hbs.registerPartials(dirPartials)
 		cb(null, 'avatar' + req.body.documento + path.extname(file.originalname))
 	}
 }) */
+
 
 var upload = multer({
 	limits: {
@@ -187,6 +192,12 @@ app.post('/inscribir', (req, res) => {
 });
 
 app.post('/registro', upload.single('imagen-perfil'), (req, res) => {
+	const msg = {
+		to: req.body.correo,
+		from: 'amachadoa@unal.edu.co',
+		subject: 'Bienvenido',
+		text: 'Bienvenido a la pagina de curos del tecnologico de Antioquia'
+	};
 
 	let usuario = new Usuario({
 		nombre: req.body.nombre,
@@ -204,6 +215,7 @@ app.post('/registro', upload.single('imagen-perfil'), (req, res) => {
 				mostrar: err
 			})
 		}
+		sgMail.send(msg);
 		res.render('indexpost', {
 			mostrar: "Se ha registrado exitosamente"
 		})
