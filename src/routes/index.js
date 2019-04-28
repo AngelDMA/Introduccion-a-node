@@ -9,7 +9,10 @@ const dirViews = path.join(__dirname, '../../template/views')
 const dirPartials = path.join(__dirname, '../../template/partials')
 const bcrypt = require('bcrypt');
 const multer = require('multer')
+const sgMail = require('@sendgrid/mail')
 require('./../helpers/helpers')
+require('./../config/config')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 app.set('view engine', 'hbs')
 app.set('views', dirViews)
@@ -198,14 +201,22 @@ app.post('/registro', upload.single('imagen-perfil'), (req, res) => {
 		avatar: req.file.buffer
 	})
 
+	const msg = {
+		to: req.body.correo,
+		from: 'jsninoc@unal.edu.co',
+		subject: 'Bienvenido',
+		text: 'Te has inscrito correctamente en la página.'
+	}
+
 	usuario.save((err, resultado) => {
 		if (err) {
 			return res.render('indexpost', {
 				mostrar: err
 			})
 		}
+		sgMail.send(msg).catch(err => console.log(err))
 		res.render('indexpost', {
-			mostrar: "Se ha registrado exitosamente"
+			mostrar: "<h3 class='tituloUsuarios text-center'> Se ha registrado exitosamente <h3> <p class='text-center'> Por favor revisar el correo con el cual se inscribió, también su spam, para el mensaje de bienvenida"
 		})
 	})
 });
